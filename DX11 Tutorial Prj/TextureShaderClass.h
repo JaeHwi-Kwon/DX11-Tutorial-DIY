@@ -31,6 +31,6 @@ private:
 	ID3D11InputLayout* m_layout = nullptr;
 	ID3D11Buffer* m_matrixBuffer = nullptr;
 
-	ID3D11SamplerState* m_sampleSate = nullptr;
+	ID3D11SamplerState* m_sampleState = nullptr;
 };
 
