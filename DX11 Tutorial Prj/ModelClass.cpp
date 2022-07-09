@@ -1,4 +1,5 @@
 #include "Stdafx.h"
+#include "TextureClass.h"
 #include "ModelClass.h"
 
 ModelClass::ModelClass() {}
@@ -7,11 +8,14 @@ ModelClass::ModelClass(const ModelClass& other) {}
 
 ModelClass::~ModelClass() {}
 
-bool ModelClass::Intialize(ID3D11Device* device) {
-	return InitializeBuffers(device);
+bool ModelClass::Intialize(ID3D11Device* device,ID3D11DeviceContext* deviceContext, char* textureFilename) {
+	if (!InitializeBuffers(device)) { return false; }
+	return LoadTexture(device, deviceContext, textureFilename);
 }
 
 void ModelClass::Shutdown() {
+	ReleaseTexture();
+
 	ShutdownBuffers();
 }
 
@@ -24,9 +28,9 @@ int ModelClass::GetIndexCount() {
 }
 
 bool ModelClass::InitializeBuffers(ID3D11Device* device) {
-	m_vertexCount = 6;
+	m_vertexCount = 3;
 
-	m_indexCount = 6;
+	m_indexCount = 3;
 
 	VertexType* vertices = new VertexType[m_vertexCount];
 	if (!vertices) {
@@ -40,29 +44,17 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device) {
 
 	// 정점을 시계방향으로 배치해줘야 그림이 그려지는 거 중요.
 	vertices[0].position = XMFLOAT3(1.0f, -1.0f, 0.0f);
-	vertices[0].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	vertices[0].texture = XMFLOAT2(0.0f, 1.0f);
 
 	vertices[1].position = XMFLOAT3(-1.0f, -1.0f, 0.0f);
-	vertices[1].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	vertices[1].texture = XMFLOAT2(0.5f, 0.0f);
 
 	vertices[2].position = XMFLOAT3(-1.0f, 1.0f, 0.0f);
-	vertices[2].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-
-	vertices[3].position = XMFLOAT3(-1.0f,1.0f,0.0f);
-	vertices[3].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
-
-	vertices[4].position = XMFLOAT3(1.0f, 1.0f, 0.0f);
-	vertices[4].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
-
-	vertices[5].position = XMFLOAT3(1.0f, -1.0f, 0.0f);
-	vertices[5].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	vertices[2].texture = XMFLOAT2(1.0f, 1.0f);
 
 	indices[0] = 0;
 	indices[1] = 1;
 	indices[2] = 2;
-	indices[3] = 3;
-	indices[4] = 4;
-	indices[5] = 5;
 
 	D3D11_BUFFER_DESC vertexBufferDesc;
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -128,4 +120,21 @@ void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext) {
 	deviceContext->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
+bool ModelClass::LoadTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext, char* filename) {
+	m_Texture = new TextureClass;
+	if (!m_Texture) {
+		return false;
+	}
+
+	return m_Texture->Initialize(device, deviceContext, filename);
+}
+
+void ModelClass::ReleaseTexture() {
+	if (m_Texture) {
+		m_Texture->Shutdown();
+		delete m_Texture;
+		m_Texture = 0;
+	}
 }
