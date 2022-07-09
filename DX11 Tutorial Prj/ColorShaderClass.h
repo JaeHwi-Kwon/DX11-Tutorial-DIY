@@ -5,7 +5,7 @@ private:
 	struct MatrixBufferType {
 		XMMATRIX world;
 		XMMATRIX view;
-		XMMATRIX projetion;
+		XMMATRIX projection;
 	};
 
 public:

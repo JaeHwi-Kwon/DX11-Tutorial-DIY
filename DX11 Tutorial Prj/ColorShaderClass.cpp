@@ -161,7 +161,7 @@ bool ColorShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, X
 
 	dataPtr->world = worldMatrix;
 	dataPtr->view = viewMatrix;
-	dataPtr->projetion = projectionMatrix;
+	dataPtr->projection = projectionMatrix;
 
 	deviceContext->Unmap(m_matrixBuffer, 0);
 
