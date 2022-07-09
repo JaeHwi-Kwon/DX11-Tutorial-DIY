@@ -24,9 +24,9 @@ int ModelClass::GetIndexCount() {
 }
 
 bool ModelClass::InitializeBuffers(ID3D11Device* device) {
-	m_vertexCount = 3;
+	m_vertexCount = 6;
 
-	m_indexCount = 3;
+	m_indexCount = 6;
 
 	VertexType* vertices = new VertexType[m_vertexCount];
 	if (!vertices) {
@@ -38,18 +38,31 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device) {
 		return false;
 	}
 
-	vertices[0].position = XMFLOAT3(-1.0f, -1.0f, 0.0f);
+	// 정점을 시계방향으로 배치해줘야 그림이 그려지는 거 중요.
+	vertices[0].position = XMFLOAT3(1.0f, -1.0f, 0.0f);
 	vertices[0].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 
-	vertices[1].position = XMFLOAT3(0.0f, 1.0f, 0.0f);
+	vertices[1].position = XMFLOAT3(-1.0f, -1.0f, 0.0f);
 	vertices[1].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 
-	vertices[2].position = XMFLOAT3(1.0f, -1.0f, 0.0f);
+	vertices[2].position = XMFLOAT3(-1.0f, 1.0f, 0.0f);
 	vertices[2].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+
+	vertices[3].position = XMFLOAT3(-1.0f,1.0f,0.0f);
+	vertices[3].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+
+	vertices[4].position = XMFLOAT3(1.0f, 1.0f, 0.0f);
+	vertices[4].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+
+	vertices[5].position = XMFLOAT3(1.0f, -1.0f, 0.0f);
+	vertices[5].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
 
 	indices[0] = 0;
 	indices[1] = 1;
 	indices[2] = 2;
+	indices[3] = 3;
+	indices[4] = 4;
+	indices[5] = 5;
 
 	D3D11_BUFFER_DESC vertexBufferDesc;
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
