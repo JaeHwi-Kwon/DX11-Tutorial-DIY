@@ -9,7 +9,9 @@ ModelClass::ModelClass(const ModelClass& other) {}
 ModelClass::~ModelClass() {}
 
 bool ModelClass::Intialize(ID3D11Device* device,ID3D11DeviceContext* deviceContext, char* textureFilename) {
-	if (!InitializeBuffers(device)) { return false; }
+	if (!InitializeBuffers(device)) { 
+		return false; 
+	}
 	return LoadTexture(device, deviceContext, textureFilename);
 }
 
@@ -25,6 +27,10 @@ void ModelClass::Render(ID3D11DeviceContext* deviceContext) {
 
 int ModelClass::GetIndexCount() {
 	return m_indexCount;
+}
+
+ID3D11ShaderResourceView* ModelClass::GetTexture() {
+	return m_Texture->GetTexture();
 }
 
 bool ModelClass::InitializeBuffers(ID3D11Device* device) {
@@ -43,13 +49,13 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device) {
 	}
 
 	// 정점을 시계방향으로 배치해줘야 그림이 그려지는 거 중요.
-	vertices[0].position = XMFLOAT3(1.0f, -1.0f, 0.0f);
+	vertices[0].position = XMFLOAT3(-1.0f, -1.0f, 0.0f);
 	vertices[0].texture = XMFLOAT2(0.0f, 1.0f);
 
-	vertices[1].position = XMFLOAT3(-1.0f, -1.0f, 0.0f);
+	vertices[1].position = XMFLOAT3(0.0f, 1.0f, 0.0f);
 	vertices[1].texture = XMFLOAT2(0.5f, 0.0f);
 
-	vertices[2].position = XMFLOAT3(-1.0f, 1.0f, 0.0f);
+	vertices[2].position = XMFLOAT3(1.0f, -1.0f, 0.0f);
 	vertices[2].texture = XMFLOAT2(1.0f, 1.0f);
 
 	indices[0] = 0;
@@ -112,8 +118,8 @@ void ModelClass::ShutdownBuffers() {
 }
 
 void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext) {
-	unsigned int stride = sizeof(VertexType);
-	unsigned int offset = 0;
+	UINT stride = sizeof(VertexType);
+	UINT offset = 0;
 
 	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
 

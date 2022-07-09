@@ -224,7 +224,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 	m_deviceContext->RSSetViewports(1, &viewport);
 
-	float fieldOfView = 3.141592654f / 4.0f;
+	float fieldOfView = XM_PI / 4.0f;
 	float screenAspact = (float)screenWidth / (float)screenHeight;
 
 	m_projectionMatrix = XMMatrixPerspectiveFovLH(fieldOfView, screenAspact, screenNear, screenDepth);
@@ -326,13 +326,4 @@ void D3DClass::GetOrthoMatrix(XMMATRIX& orthoMatrix) {
 void D3DClass::GetVideoCardInfo(char* cardName, int& memory) {
 	strcpy_s(cardName, 128, m_videoCardDescription);
 	memory = m_videoCardMemory;
-
-	string filePath = "test.txt";
-
-	ofstream writeFile(filePath.data());
-	if (writeFile.is_open()) {
-		writeFile << m_videoCardDescription<<endl;
-		writeFile << m_videoCardMemory;
-		writeFile.close();
-	}
 }

@@ -2,7 +2,7 @@
 #include "D3DClass.h"
 #include "CameraClass.h"
 #include "ModelClass.h"
-#include "ColorShaderClass.h"
+#include "TextureShaderClass.h"
 #include "GraphicsClass.h"
 
 GraphicsClass::GraphicsClass() {}
@@ -28,24 +28,26 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd) {
 		return false;
 	}
 
-	m_Camera->SetPosition(0.0f, 0.0f, -15.0f);
+	m_Camera->SetPosition(0.0f, 0.0f, -5.0f);
 
 	m_Model = new ModelClass;
 	if (!m_Model) {
 		return false;
 	}
 
-	if (!m_Model->Intialize(m_Direct3D->GetDevice())) {
+	if (!m_Model->Intialize(m_Direct3D->GetDevice(),m_Direct3D->GetDeviceContext(),
+		"../DX11 Tutorial Prj/data/stone01.tga")) {
 		MessageBox(hwnd, L"Could not Initialize the model object.", L"Error", MB_OK);
 		return false;
 	}
 
-	m_ColorShader = new ColorShaderClass;
-	if (!m_ColorShader) {
+	m_TextureShader = new TextureShaderClass;
+	if (!m_TextureShader) {
 		return false;
 	}
 
-	if (!m_ColorShader->Initialize(m_Direct3D->GetDevice(), hwnd)) {
+	if (!m_TextureShader->Initialize(m_Direct3D->GetDevice(), hwnd)) {
+		MessageBox(hwnd, L"Could Not Initialize the color shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -53,10 +55,10 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd) {
 }
 
 void GraphicsClass::Shutdown() {
-	if (m_ColorShader) {
-		m_ColorShader->Shutdown();
-		delete m_ColorShader;
-		m_ColorShader = 0;
+	if (m_TextureShader) {
+		m_TextureShader->Shutdown();
+		delete m_TextureShader;
+		m_TextureShader = 0;
 	}
 
 	if (m_Model) {
@@ -82,7 +84,7 @@ bool GraphicsClass::Frame() {
 }
 
 bool GraphicsClass::Render() {
-	m_Direct3D->BeginScene(0.5f, 0.5f, 0.5f, 1.0f);
+	m_Direct3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
 	m_Camera->Render();
 
@@ -93,8 +95,8 @@ bool GraphicsClass::Render() {
 
 	m_Model->Render(m_Direct3D->GetDeviceContext());
 
-	if (!m_ColorShader->Render(m_Direct3D->GetDeviceContext(),
-		m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix)) {
+	if (!m_TextureShader->Render(m_Direct3D->GetDeviceContext(),
+		m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,m_Model->GetTexture())) {
 		return false;
 	}
 

@@ -1,5 +1,5 @@
 #pragma once
-class TextureShaderClass
+class TextureShaderClass : public AlignedAllocationPolicy<16>
 {
 private:
 	struct MatrixBufferType {

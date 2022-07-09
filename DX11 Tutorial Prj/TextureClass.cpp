@@ -32,6 +32,7 @@ bool TextureClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceC
 	if (FAILED(hResult)) {
 		return false;
 	}
+
 	UINT rowPitch = (width * 4) * sizeof(unsigned char);
 
 	deviceContext->UpdateSubresource(m_texture, 0, nullptr, m_targaData, rowPitch, 0);
@@ -40,7 +41,7 @@ bool TextureClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceC
 	srvDesc.Format = textureDesc.Format;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.Texture2D.MipLevels = 1;
+	srvDesc.Texture2D.MipLevels = -1;
 
 	hResult = device->CreateShaderResourceView(m_texture, &srvDesc, &m_textureView);
 	if (FAILED(hResult)) {
@@ -88,10 +89,23 @@ bool TextureClass::LoadTarga(char* filename, int& height, int& width) {
 		return false;
 	}
 
+	height = (int)targaFileHeader.height;
+	width = (int)targaFileHeader.width;
+	int bpp = (int)targaFileHeader.bpp;
+
+	if (bpp != 32) {
+		return false;
+	}
+
 	int imageSize = width * height * 4;
 
 	unsigned char* targaImage = new unsigned char[imageSize];
 	if (!targaImage) {
+		return false;
+	}
+
+	count = (unsigned int)fread(targaImage, 1, imageSize, filePtr);
+	if (count != imageSize) {
 		return false;
 	}
 
