@@ -8,9 +8,12 @@
 
 GraphicsClass::GraphicsClass() {}
 
+
 GraphicsClass::GraphicsClass(const GraphicsClass& other) {}
 
+
 GraphicsClass::~GraphicsClass() {}
+
 
 bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd) {
 	m_Direct3D = new D3DClass;
@@ -36,7 +39,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd) {
 		return false;
 	}
 
-	if (!m_Model->Intialize(m_Direct3D->GetDevice(), L"../DX11 Tutorial Prj/data/seafloor.dds")) {
+	if (!m_Model->Intialize(m_Direct3D->GetDevice(), "../DX11 Tutorial Prj/data/cube.txt",
+		L"../DX11 Tutorial Prj/data/seafloor.dds")) {
 		MessageBox(hwnd, L"Could not Initialize the model object.", L"Error", MB_OK);
 		return false;
 	}
@@ -56,7 +60,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd) {
 		return false;
 	}
 
-	m_Light->SetDiffuseColor(0.0f, 1.0f, 0.0f, 1.0f);
+	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetDirection(0.0f, 0.0f, 1.0f);
 
 	return true;
@@ -98,6 +102,7 @@ bool GraphicsClass::Frame() {
 	rotation += (float)XM_PI * 0.01f;
 	if (rotation > 360.0f)
 		rotation -= 360.0f;
+
 	return Render(rotation);
 }
 
