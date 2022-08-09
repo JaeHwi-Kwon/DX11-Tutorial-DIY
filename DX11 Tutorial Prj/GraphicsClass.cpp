@@ -2,7 +2,8 @@
 #include "D3DClass.h"
 #include "CameraClass.h"
 #include "ModelClass.h"
-#include "TextureShaderClass.h"
+#include "LightClass.h"
+#include "LightShaderClass.h"
 #include "GraphicsClass.h"
 
 GraphicsClass::GraphicsClass() {}
@@ -35,30 +36,42 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd) {
 		return false;
 	}
 
-	if (!m_Model->Intialize(m_Direct3D->GetDevice(),m_Direct3D->GetDeviceContext(),
-		"../DX11 Tutorial Prj/data/stone01.tga")) {
+	if (!m_Model->Intialize(m_Direct3D->GetDevice(), L"../DX11 Tutorial Prj/data/seafloor.dds")) {
 		MessageBox(hwnd, L"Could not Initialize the model object.", L"Error", MB_OK);
 		return false;
 	}
 
-	m_TextureShader = new TextureShaderClass;
-	if (!m_TextureShader) {
+	m_LightShader = new LightShaderClass;
+	if (!m_LightShader) {
 		return false;
 	}
 
-	if (!m_TextureShader->Initialize(m_Direct3D->GetDevice(), hwnd)) {
+	if (!m_LightShader->Initialize(m_Direct3D->GetDevice(), hwnd)) {
 		MessageBox(hwnd, L"Could Not Initialize the color shader object.", L"Error", MB_OK);
 		return false;
 	}
+
+	m_Light = new LightClass;
+	if (!m_Light) {
+		return false;
+	}
+
+	m_Light->SetDiffuseColor(1.0f, 0.0f, 1.0f, 1.0f);
+	m_Light->SetDirection(0.0f, 0.0f, 1.0f);
 
 	return true;
 }
 
 void GraphicsClass::Shutdown() {
-	if (m_TextureShader) {
-		m_TextureShader->Shutdown();
-		delete m_TextureShader;
-		m_TextureShader = 0;
+	if (m_Light) {
+		delete m_Light;
+		m_Light = 0;
+	}
+
+	if (m_LightShader) {
+		m_LightShader->Shutdown();
+		delete m_LightShader;
+		m_LightShader = 0;
 	}
 
 	if (m_Model) {
@@ -80,10 +93,15 @@ void GraphicsClass::Shutdown() {
 }
 
 bool GraphicsClass::Frame() {
-	return Render();
+	static float rotation = 0.0f;
+
+	rotation += (float)XM_PI * 0.01f;
+	if (rotation > 360.0f)
+		rotation -= 360.0f;
+	return Render(rotation);
 }
 
-bool GraphicsClass::Render() {
+bool GraphicsClass::Render(float rotation) {
 	m_Direct3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
 	m_Camera->Render();
@@ -93,10 +111,13 @@ bool GraphicsClass::Render() {
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_Direct3D->GetProjectionMatrix(projectionMatrix);
 
+	worldMatrix = XMMatrixRotationY(rotation);
+
 	m_Model->Render(m_Direct3D->GetDeviceContext());
 
-	if (!m_TextureShader->Render(m_Direct3D->GetDeviceContext(),
-		m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,m_Model->GetTexture())) {
+	if (!m_LightShader->Render(m_Direct3D->GetDeviceContext(),
+		m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,m_Model->GetTexture(),
+		m_Light->GetDirection(), m_Light->GetDiffuseColor())) {
 		return false;
 	}
 

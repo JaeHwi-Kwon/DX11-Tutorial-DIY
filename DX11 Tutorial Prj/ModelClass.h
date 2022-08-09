@@ -2,19 +2,20 @@
 
 class TextureClass;
 
-class ModelClass : public AlignedAllocationPolicy<16>
+class ModelClass
 {
 private:
 	struct VertexType {
 		XMFLOAT3 position;
 		XMFLOAT2 texture;
+		XMFLOAT3 normal;
 	};
 public:
 	ModelClass();
 	ModelClass(const ModelClass&);
 	~ModelClass();
 
-	bool Intialize(ID3D11Device*, ID3D11DeviceContext*, char*);
+	bool Intialize(ID3D11Device*, WCHAR*);
 	void Shutdown();
 	void Render(ID3D11DeviceContext*);
 
@@ -26,7 +27,7 @@ private:
 	void ShutdownBuffers();
 	void RenderBuffers(ID3D11DeviceContext*);
 
-	bool LoadTexture(ID3D11Device*, ID3D11DeviceContext*, char*);
+	bool LoadTexture(ID3D11Device*, WCHAR*);
 	void ReleaseTexture();
 
 private:
