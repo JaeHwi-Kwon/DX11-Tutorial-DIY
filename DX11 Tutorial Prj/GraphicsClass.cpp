@@ -32,14 +32,14 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd) {
 		return false;
 	}
 
-	m_Camera->SetPosition(0.0f, 0.0f, -5.0f);
+	m_Camera->SetPosition(0.0f, 0.0f, -6.0f);
 
 	m_Model = new ModelClass;
 	if (!m_Model) {
 		return false;
 	}
 
-	if (!m_Model->Intialize(m_Direct3D->GetDevice(), "../DX11 Tutorial Prj/data/model.txt",
+	if (!m_Model->Intialize(m_Direct3D->GetDevice(), "../DX11 Tutorial Prj/data/cube.txt",
 		L"../DX11 Tutorial Prj/data/seafloor.dds")) {
 		MessageBox(hwnd, L"Could not Initialize the model object.", L"Error", MB_OK);
 		return false;
@@ -61,14 +61,16 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd) {
 	}
 
 	m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
-	//m_Light->SetAmbientColor(0.0f, 0.0f, 0.0f, 0.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetDirection(1.0f, 0.0f, 0.0f);
+	m_Light->SetDirection(0.0f, 0.0f, 1.0f);
+	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
+	m_Light->SetSpecularPower(32.0f);
 
 	return true;
 }
 
 void GraphicsClass::Shutdown() {
+
 	if (m_Light) {
 		delete m_Light;
 		m_Light = 0;
@@ -101,7 +103,7 @@ void GraphicsClass::Shutdown() {
 bool GraphicsClass::Frame() {
 	static float rotation = 0.0f;
 
-	rotation += (float)XM_PI * 0.01f;
+	rotation += (float)XM_PI * 0.005f;
 	if (rotation > 360.0f)
 		rotation -= 360.0f;
 
@@ -123,8 +125,9 @@ bool GraphicsClass::Render(float rotation) {
 	m_Model->Render(m_Direct3D->GetDeviceContext());
 
 	if (!m_LightShader->Render(m_Direct3D->GetDeviceContext(),
-		m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,m_Model->GetTexture(),
-		m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor())) {
+		m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture(),
+		m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Camera->GetPosition(),
+		m_Light->GetSpecularColor(),m_Light->GetSpecularPower())) {
 		return false;
 	}
 
