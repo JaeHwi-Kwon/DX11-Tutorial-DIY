@@ -39,7 +39,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd) {
 		return false;
 	}
 
-	if (!m_Model->Intialize(m_Direct3D->GetDevice(), "../DX11 Tutorial Prj/data/cube.txt",
+	if (!m_Model->Intialize(m_Direct3D->GetDevice(), "../DX11 Tutorial Prj/data/model.txt",
 		L"../DX11 Tutorial Prj/data/seafloor.dds")) {
 		MessageBox(hwnd, L"Could not Initialize the model object.", L"Error", MB_OK);
 		return false;
@@ -60,8 +60,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd) {
 		return false;
 	}
 
+	m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetDirection(0.0f, 0.0f, 1.0f);
+	m_Light->SetDirection(1.0f, 0.0f, 0.0f);
 
 	return true;
 }
@@ -122,7 +123,7 @@ bool GraphicsClass::Render(float rotation) {
 
 	if (!m_LightShader->Render(m_Direct3D->GetDeviceContext(),
 		m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,m_Model->GetTexture(),
-		m_Light->GetDirection(), m_Light->GetDiffuseColor())) {
+		m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor())) {
 		return false;
 	}
 
