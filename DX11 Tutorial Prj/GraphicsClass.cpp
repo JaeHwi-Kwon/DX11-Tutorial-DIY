@@ -170,7 +170,7 @@ bool GraphicsClass::Render(float rotation) {
 
 	m_Direct3D->TurnZBufferOff();
 
-	if (!m_Bitmap->Render(m_Direct3D->GetDeviceContext(), 100, 100)) {
+	if (!m_Bitmap->Render(m_Direct3D->GetDeviceContext(), 300, 300)) {
 		return false;
 	}
 
